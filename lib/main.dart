@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Recipe Recognizer',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
@@ -37,13 +38,14 @@ class _MyHomePageState extends State<MyHomePage> {
   String label = '';
   bool isLoading = false;
   List<Map<String, dynamic>> recipeData = []; // List to store recipe data
+  List<Map<String, dynamic>> recognitionResults = []; // Store recognition results
 
   // Load the model and labels
   Future<void> _tfLiteInit() async {
     await Tflite.loadModel(
-      model: "assets/model_unquant.tflite",
-      labels: "assets/labels.txt",
-      numThreads: 1,
+      model: "assets/model.tflite",
+      labels: "assets/labeljs.txt",
+      numThreads: 4,
       isAsset: true,
       useGpuDelegate: false,
     );
@@ -54,6 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       recipeData = jsonResponse.map((item) => item as Map<String, dynamic>).toList();
     });
+
+    // Log recipe data for debugging
+    devtools.log("Recipe Data: $recipeData");
   }
 
   // Pick image from gallery or camera
@@ -80,10 +85,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var recognitions = await Tflite.runModelOnImage(
       path: filePath!.path,
-      imageMean: 0.0,
-      imageStd: 224.0,
+      imageMean: 0.846,
+      imageStd: 1,
       numResults: 25,
-      threshold: 0.1,
+      threshold: 0.2,
       asynch: true,
     );
 
@@ -99,101 +104,54 @@ class _MyHomePageState extends State<MyHomePage> {
       return;
     }
 
-    // Filter out results with confidence lower than 50% (if required)
-    List<Map<String, dynamic>> filteredResults = recognitions
-        .where((result) => (result['confidence'] * 100) >= 0) // Adjust as needed
-        .map((result) => {
-      'label': result['label'],
-    })
-        .toList();
+    // Sort results by confidence in descending order
+    recognitions.sort((a, b) => (b['confidence'] as double).compareTo(a['confidence'] as double));
 
-    // Log filtered results
-    devtools.log("Filtered Results: $filteredResults");
+    // Take the top 5 predictions
+    List<Map<String, dynamic>> top5Results = recognitions.take(5).map((result) {
+      return {
+        'label': result['label'],
+        'confidence': result['confidence'],
+      };
+    }).toList();
+
+    // Log top 5 results
+    devtools.log("Top 5 Results: $top5Results");
 
     // Map predictions to recipe information
     List<Map<String, dynamic>> resultWithRecipes = [];
-    for (var recognition in filteredResults) {
-      // Find the matching recipe from the JSON
-      var matchingRecipe = recipeData.firstWhere(
-            (recipe) => recipe['class_name'] == recognition['label'],
-        orElse: () => {},
-      );
+    for (var recognition in recognitions) {
+      String label = recognition['label'].trim().toLowerCase();
 
-      if (matchingRecipe.isNotEmpty) {
-        resultWithRecipes.add({
-          'label': recognition['label'],
-          'image_url': matchingRecipe['image_url'],
-          'recipe_name': matchingRecipe['Name'],
-          'ingredients': matchingRecipe['Ingredients'],
-          'method': matchingRecipe['Method'],
-        });
+      // Find all matching recipes
+      var matchingRecipes = recipeData.where(
+              (recipe) => recipe['class_name'].trim().toLowerCase() == label
+      ).toList();
+
+      if (matchingRecipes.isNotEmpty) {
+        for (var recipe in matchingRecipes) {
+          resultWithRecipes.add({
+            'label': recognition['label'],
+            'confidence': recognition['confidence'],
+            'image_url': recipe['image_url'],
+            'recipe_name': recipe['Name'],
+            'ingredients': recipe['Ingredients'],
+            'method': recipe['Method'],
+          });
+        }
       }
     }
 
-    // Show modal with results
-    showResultsModal(resultWithRecipes);
-  }
+    // Store recognition results
+    setState(() {
+      recognitionResults = resultWithRecipes;
+    });
 
-  // Show a modal with prediction results
-  void showResultsModal(List<Map<String, dynamic>> results) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        insetPadding: const EdgeInsets.all(10), // Add some padding around the dialog
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.95, // 95% width
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min, // Adjust height based on content
-            children: [
-              const Text(
-                "Recognition Results",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: results.map((result) {
-                    return Card(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: ListTile(
-                        onTap: () {
-                          Navigator.pop(context); // Close the modal
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => RecipeDetailScreen(recipe: result),
-                            ),
-                          );
-                        },
-                        leading: ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            result['image_url'],
-                            width: 50,
-                            height: 50,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        title: Text(
-                          result['label'],
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: Text(result['recipe_name']),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Close"),
-              ),
-            ],
-          ),
-        ),
+    // Navigate to the results page
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultsPage(results: resultWithRecipes),
       ),
     );
   }
@@ -225,62 +183,122 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: const Text("Recipe Recognizer"),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const Text(
-                "Welcome to Recipe Recognizer",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  GestureDetector(
-                    onTap: () => pickImage(ImageSource.gallery),
-                    child: buildCard("Upload Image", "Select from gallery", Icons.upload_file),
-                  ),
-                  GestureDetector(
-                    onTap: () => pickImage(ImageSource.camera),
-                    child: buildCard("Use Camera", "Take a picture", Icons.camera_alt),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              buildImageCard(),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: filePath == null ? null : classifyImage,
-                    child: isLoading ? const CircularProgressIndicator() : const Text("Confirm"),
-                  ),
-                  ElevatedButton(
-                    onPressed: clearImage,
-                    child: const Text("Cancel"),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.upload_file), label: "Upload"),
-          BottomNavigationBarItem(icon: Icon(Icons.camera_alt), label: "Camera"),
-        ],
-        onTap: (index) {
-          if (index == 0) {
-            pickImage(ImageSource.gallery);
-          } else if (index == 1) {
-            pickImage(ImageSource.camera);
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth > 600) {
+            // Tablet or desktop layout
+            return _buildWideLayout();
+          } else {
+            // Mobile layout
+            return _buildNormalLayout();
           }
         },
+      ),
+    );
+  }
+
+  Widget _buildNormalLayout() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const Text(
+              "Welcome to Chef AI",
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                GestureDetector(
+                  onTap: () => pickImage(ImageSource.gallery),
+                  child: buildCard("Upload Image", "Select from gallery", Icons.upload_file),
+                ),
+                GestureDetector(
+                  onTap: () => pickImage(ImageSource.camera),
+                  child: buildCard("Use Camera", "Take a picture", Icons.camera_alt),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            buildImageCard(),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: filePath == null ? null : classifyImage,
+                  child: isLoading ? const CircularProgressIndicator() : const Text("Confirm"),
+                ),
+                ElevatedButton(
+                  onPressed: clearImage,
+                  child: const Text("Cancel"),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWideLayout() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Welcome to Chef AI",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      GestureDetector(
+                        onTap: () => pickImage(ImageSource.gallery),
+                        child: buildCard("Upload Image", "Select from gallery", Icons.upload_file),
+                      ),
+                      GestureDetector(
+                        onTap: () => pickImage(ImageSource.camera),
+                        child: buildCard("Use Camera", "Take a picture", Icons.camera_alt),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  buildImageCard(),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: filePath == null ? null : classifyImage,
+                        child: isLoading ? const CircularProgressIndicator() : const Text("Confirm"),
+                      ),
+                      ElevatedButton(
+                        onPressed: clearImage,
+                        child: const Text("Cancel"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Container(), // Add additional content for wide layout
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -291,13 +309,13 @@ class _MyHomePageState extends State<MyHomePage> {
       elevation: 5,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
-        width: 140,
-        height: 140,
+        width: MediaQuery.of(context).size.width * 0.4,
+        height: MediaQuery.of(context).size.width * 0.4,
         padding: const EdgeInsets.all(12),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40),
+            Icon(icon, size: MediaQuery.of(context).size.width * 0.1),
             const SizedBox(height: 10),
             Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
             const SizedBox(height: 5),
@@ -315,16 +333,66 @@ class _MyHomePageState extends State<MyHomePage> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Container(
         width: double.infinity,
-        height: 300,
+        height: MediaQuery.of(context).size.height * 0.3,
         child: filePath == null
-            ? const Icon(Icons.upload_file, size: 100, color: Colors.grey)
+            ? Icon(Icons.upload_file, size: MediaQuery.of(context).size.width * 0.2, color: Colors.grey)
             : Image.file(filePath!, fit: BoxFit.cover),
       ),
     );
   }
 }
 
-// New Screen for Recipe Details
+// Results Page
+class ResultsPage extends StatelessWidget {
+  final List<Map<String, dynamic>> results;
+
+  const ResultsPage({super.key, required this.results});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Recognition Results"),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: results.map((result) {
+          return Card(
+            margin: const EdgeInsets.only(bottom: 10),
+            child: ListTile(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RecipeDetailScreen(recipe: result),
+                  ),
+                );
+              },
+              leading: ClipRRect(
+                borderRadius: BorderRadius.circular(10),
+                child: Image.network(
+                  result['image_url'],
+                  width: 50,
+                  height: 50,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              title: Text(
+                result['label'],
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                "${result['recipe_name']}\nConfidence: ${(result['confidence'] * 100).toStringAsFixed(2)}%",
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+// Recipe Details Page
 class RecipeDetailScreen extends StatelessWidget {
   final Map<String, dynamic> recipe;
 
@@ -337,11 +405,11 @@ class RecipeDetailScreen extends StatelessWidget {
         children: [
           // Top Image (35% of screen height with bottom border radius)
           Container(
-            height: MediaQuery.of(context).size.height * 0.35, // 35% of screen height
+            height: MediaQuery.of(context).size.height * 0.35,
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(30), // Left bottom radius
-                bottomRight: Radius.circular(30), // Right bottom radius
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
               ),
               image: DecorationImage(
                 image: NetworkImage(recipe['image_url']),
@@ -350,13 +418,21 @@ class RecipeDetailScreen extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                // Back Button
+                // Back Button with Background Color
                 Positioned(
-                  top: 40,
+                  top: MediaQuery.of(context).padding.top,
                   left: 16,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5), // Background color
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
+                      onPressed: () {
+                        Navigator.pop(context); // Go back to the results page
+                      },
+                    ),
                   ),
                 ),
               ],

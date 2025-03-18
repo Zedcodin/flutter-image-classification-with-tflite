@@ -38940,5 +38940,243 @@
         ],
         "image_url": "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/recipe-image-legacy-id-4858_11-1cc5bec.jpg?resize=440%2C230",
         "class_name": ""
+    },
+    {
+        "Name": "Classic Apple Pie",
+        "Description": "A timeless dessert featuring sweet and tart apples encased in a flaky pastry crust.",
+        "Author": "Baker Jane",
+        "Ingredients": [
+            "6-8 medium apples, peeled and sliced",
+            "1/2 cup granulated sugar",
+            "1/4 cup brown sugar",
+            "1 tsp cinnamon",
+            "1/4 tsp nutmeg",
+            "1 tbsp lemon juice",
+            "2 tbsp butter",
+            "500g ready-made pie crust",
+            "1 egg, beaten (for glazing)"
+        ],
+        "Method": [
+            "Preheat oven to 190°C/fan 170°C/gas 5. In a bowl, mix apples, sugars, cinnamon, nutmeg, and lemon juice.",
+            "Roll out one pie crust and line a pie dish. Add the apple mixture and dot with butter.",
+            "Roll out the second crust and place it over the apples. Seal the edges, trim excess, and cut slits in the top for steam.",
+            "Brush the top with beaten egg and bake for 45-50 minutes until golden. Cool before serving."
+        ],
+        "image_url": "https://example.com/apple-pie.jpg",
+        "class_name": "Apple"
+    },
+    {
+        "Name": "Banana Cream Pie",
+        "Description": "A creamy and indulgent pie with layers of fresh bananas and velvety custard.",
+        "Author": "Chef Mia",
+        "Ingredients": [
+            "3 ripe bananas, sliced",
+            "1 pre-baked pie crust",
+            "2 cups milk",
+            "3/4 cup sugar",
+            "1/4 cup cornstarch",
+            "3 egg yolks",
+            "1 tsp vanilla extract",
+            "1 tbsp butter",
+            "Whipped cream for topping"
+        ],
+        "Method": [
+            "In a saucepan, whisk sugar, cornstarch, and egg yolks. Gradually add milk and cook over medium heat until thickened.",
+            "Remove from heat, stir in vanilla and butter. Let cool slightly.",
+            "Layer banana slices in the pie crust, then pour the custard over them. Chill for 2 hours.",
+            "Top with whipped cream before serving."
+        ],
+        "image_url": "https://example.com/banana-cream-pie.jpg",
+        "class_name": "Banana"
+    },
+    {
+        "Name": "Beetroot and Goat Cheese Tart",
+        "Description": "A savory tart combining roasted beetroots and creamy goat cheese.",
+        "Author": "Chef Alex",
+        "Ingredients": [
+            "3 medium beetroots, roasted and sliced",
+            "200g goat cheese",
+            "1 pre-baked tart shell",
+            "2 tbsp olive oil",
+            "1 tbsp balsamic vinegar",
+            "1 tsp thyme",
+            "Salt and pepper to taste"
+        ],
+        "Method": [
+            "Preheat oven to 180°C/fan 160°C/gas 4. Arrange roasted beetroot slices in the tart shell.",
+            "Crumble goat cheese over the beetroots. Drizzle with olive oil and balsamic vinegar.",
+            "Sprinkle thyme, salt, and pepper. Bake for 20-25 minutes until cheese is slightly melted.",
+            "Serve warm or at room temperature."
+        ],
+        "image_url": "https://example.com/beetroot-tart.jpg",
+        "class_name": "Beetroot"
+    },
+    {
+        "Name": "Stuffed Bell Peppers",
+        "Description": "Colorful bell peppers stuffed with a savory rice and vegetable mixture.",
+        "Author": "Chef Sam",
+        "Ingredients": [
+            "4 large bell peppers",
+            "1 cup cooked rice",
+            "1 onion, chopped",
+            "2 garlic cloves, minced",
+            "1 cup diced tomatoes",
+            "1 cup black beans",
+            "1 tsp paprika",
+            "1 tsp cumin",
+            "Salt and pepper to taste",
+            "1/2 cup shredded cheese"
+        ],
+        "Method": [
+            "Preheat oven to 190°C/fan 170°C/gas 5. Cut the tops off the bell peppers and remove seeds.",
+            "In a pan, sauté onion and garlic until soft. Add tomatoes, beans, rice, paprika, cumin, salt, and pepper. Cook for 5 minutes.",
+            "Stuff the mixture into the bell peppers and top with cheese.",
+            "Bake for 25-30 minutes until peppers are tender."
+        ],
+        "image_url": "https://example.com/stuffed-bell-peppers.jpg",
+        "class_name": "Bell Peppers"
+    },
+    {
+        "Name": "Cabbage Rolls",
+        "Description": "Tender cabbage leaves stuffed with a flavorful meat and rice filling.",
+        "Author": "Chef Maria",
+        "Ingredients": [
+            "1 large cabbage",
+            "500g ground beef",
+            "1 cup cooked rice",
+            "1 onion, chopped",
+            "2 garlic cloves, minced",
+            "1 cup tomato sauce",
+            "1 tsp paprika",
+            "Salt and pepper to taste"
+        ],
+        "Method": [
+            "Boil cabbage leaves until soft. In a bowl, mix beef, rice, onion, garlic, paprika, salt, and pepper.",
+            "Place a spoonful of the mixture on each cabbage leaf and roll tightly.",
+            "Arrange rolls in a baking dish, cover with tomato sauce, and bake at 180°C for 45 minutes."
+        ],
+        "image_url": "https://example.com/cabbage-rolls.jpg",
+        "class_name": "Cabbage"
+    },
+    {
+        "Name": "Carrot and Ginger Soup",
+        "Description": "A warm and comforting soup with the sweetness of carrots and a hint of ginger.",
+        "Author": "Chef Liam",
+        "Ingredients": [
+            "6 large carrots, peeled and chopped",
+            "1 onion, chopped",
+            "2 garlic cloves, minced",
+            "1 tbsp fresh ginger, grated",
+            "4 cups vegetable stock",
+            "1 tbsp olive oil",
+            "Salt and pepper to taste"
+        ],
+        "Method": [
+            "Heat olive oil in a pot and sauté onion, garlic, and ginger until soft.",
+            "Add carrots and stock. Simmer for 20 minutes until carrots are tender.",
+            "Blend until smooth, season with salt and pepper, and serve hot."
+        ],
+        "image_url": "https://example.com/carrot-ginger-soup.jpg",
+        "class_name": "Carrot"
+    },
+    {
+        "Name": "Cauliflower Cheese Bake",
+        "Description": "A creamy and cheesy cauliflower dish perfect as a side or main.",
+        "Author": "Chef Emily",
+        "Ingredients": [
+            "1 large cauliflower, cut into florets",
+            "2 cups cheese sauce",
+            "1/2 cup breadcrumbs",
+            "1/2 cup grated cheddar cheese"
+        ],
+        "Method": [
+            "Preheat oven to 190°C/fan 170°C/gas 5. Steam cauliflower until tender.",
+            "Place cauliflower in a baking dish, pour cheese sauce over it, and top with breadcrumbs and cheddar.",
+            "Bake for 20-25 minutes until golden and bubbly."
+        ],
+        "image_url": "https://example.com/cauliflower-cheese.jpg",
+        "class_name": "Cauliflower"
+    },
+    {
+        "Name": "Chilli Pepper Salsa",
+        "Description": "A spicy and tangy salsa made with fresh chilli peppers.",
+        "Author": "Chef Carlos",
+        "Ingredients": [
+            "4 chilli peppers, finely chopped",
+            "2 tomatoes, diced",
+            "1 onion, finely chopped",
+            "1 garlic clove, minced",
+            "1 lime, juiced",
+            "Salt to taste"
+        ],
+        "Method": [
+            "Combine all ingredients in a bowl and mix well.",
+            "Let sit for 30 minutes to allow flavors to meld.",
+            "Serve with tortilla chips or as a topping for tacos."
+        ],
+        "image_url": "https://example.com/chilli-salsa.jpg",
+        "class_name": "Chilli Pepper"
+    },
+    {
+        "Name": "Corn Chowder",
+        "Description": "A creamy and hearty soup made with sweetcorn and potatoes.",
+        "Author": "Chef Olivia",
+        "Ingredients": [
+            "2 cups sweetcorn kernels",
+            "2 potatoes, peeled and diced",
+            "1 onion, chopped",
+            "2 cups milk",
+            "2 cups vegetable stock",
+            "1 tbsp butter",
+            "Salt and pepper to taste"
+        ],
+        "Method": [
+            "In a pot, sauté onion in butter until soft. Add potatoes, corn, stock, and milk.",
+            "Simmer for 20 minutes until potatoes are tender. Blend half the soup for a creamy texture.",
+            "Season with salt and pepper and serve hot."
+        ],
+        "image_url": "https://example.com/corn-chowder.jpg",
+        "class_name": "Corn"
+    },
+       {
+        "Name": "Watermelon Feta Salad",
+        "Description": "A refreshing summer salad combining sweet watermelon with salty feta cheese.",
+        "Author": "Chef Sofia",
+        "Ingredients": [
+            "4 cups watermelon, cubed",
+            "200g feta cheese, crumbled",
+            "1/4 red onion, thinly sliced",
+            "1/4 cup fresh mint leaves",
+            "2 tbsp olive oil",
+            "1 tbsp balsamic vinegar",
+            "Salt and pepper to taste"
+        ],
+        "Method": [
+            "In a large bowl, combine watermelon, feta, red onion, and mint leaves.",
+            "Drizzle with olive oil and balsamic vinegar. Toss gently to combine.",
+            "Season with salt and pepper to taste. Serve chilled."
+        ],
+        "image_url": "https://example.com/watermelon-feta-salad.jpg",
+        "class_name": "Watermelon"
+    },
+    {
+        "Name": "Mango Sticky Rice",
+        "Description": "A classic Thai dessert featuring sweet mangoes and creamy coconut sticky rice.",
+        "Author": "Chef Nara",
+        "Ingredients": [
+            "1 cup glutinous rice",
+            "1 1/2 cups coconut milk",
+            "1/2 cup sugar",
+            "1/4 tsp salt",
+            "2 ripe mangoes, sliced",
+            "1 tbsp toasted sesame seeds (optional)"
+        ],
+        "Method": [
+            "Soak glutinous rice in water for 4 hours, then steam until cooked.",
+            "In a saucepan, heat coconut milk, sugar, and salt until sugar dissolves. Pour half over the cooked rice and let it absorb.",
+            "Serve the rice with sliced mangoes, drizzle with the remaining coconut sauce, and sprinkle with sesame seeds."
+        ],
+        "image_url": "https://example.com/mango-sticky-rice.jpg",
+        "class_name": "Mango"
     }
 ]
